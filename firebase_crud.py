@@ -61,8 +61,11 @@ def read_multiple_documents(collection_name):
 
     # If not in cache, read from Firestore
     docs = db.collection(collection_name).stream()
-    for doc in docs:
-        print(f'{doc.id} => {doc.to_dict()}')
+    document_ids = []
+    for idx, doc in enumerate(docs):
+        document_ids.append(doc.id)
+        print(f"{idx + 1}. {doc.id}")
+    return document_ids
     for doc in docs:
         print(f'{doc.id} => {doc.to_dict()}')
 
@@ -153,15 +156,21 @@ def main():
             doc_id = document_ids[doc_id_idx]
             read_document(collection, doc_id)
         elif choice == '4':
-            collection = input("Enter collection name: ")
+            collections = list_collections()
+            collection_idx = int(input("Select collection by number: ")) - 1
+            collection = collections[collection_idx]
             read_multiple_documents(collection)
         elif choice == '5':
-            collection = input("Enter collection name: ")
+            collections = list_collections()
+            collection_idx = int(input("Select collection by number: ")) - 1
+            collection = collections[collection_idx]
             doc_id = input("Enter document ID: ")
             data = eval(input("Enter data to update as a dictionary: "))
             update_document(collection, doc_id, data)
         elif choice == '6':
-            collection = input("Enter collection name: ")
+            collections = list_collections()
+            collection_idx = int(input("Select collection by number: ")) - 1
+            collection = collections[collection_idx]
             doc_id = input("Enter document ID: ")
             delete_document(collection, doc_id)
         elif choice == '7':
