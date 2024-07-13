@@ -51,7 +51,6 @@ def create_multiple_documents(collection_name, documents):
 
 # Read multiple documents
 def read_multiple_documents(collection_name):
-    docs = db.collection(collection_name).stream()
     # Try to read from the local cache first
     c.execute('SELECT document_id, data FROM cache WHERE collection = ?', (collection_name,))
     cached_docs = c.fetchall()
@@ -64,6 +63,9 @@ def read_multiple_documents(collection_name):
     docs = db.collection(collection_name).stream()
     for doc in docs:
         print(f'{doc.id} => {doc.to_dict()}')
+    for doc in docs:
+        print(f'{doc.id} => {doc.to_dict()}')
+
 def read_document(collection_name, document_id):
     doc = db.collection(collection_name).document(document_id).get()
     if doc.exists:
@@ -117,14 +119,6 @@ def display_menu():
     print("5. Update a document")
     print("6. Delete a document")
     print("7. Exit")
-    print("Select an operation:")
-    print("1. Create a document")
-    print("2. Create multiple documents")
-    print("3. Read a document")
-    print("4. Read multiple documents")
-    print("5. Update a document")
-    print("6. Delete a document")
-    print("7. Exit")
 
 def main():
     while True:
@@ -133,9 +127,7 @@ def main():
 
         if choice == '1':
             list_collections()
-            list_collections()
             collection = input("Enter collection name: ")
-            list_document_ids(collection)
             list_document_ids(collection)
             doc_id = input("Enter document ID: ")
             data = eval(input("Enter data as a dictionary: "))
