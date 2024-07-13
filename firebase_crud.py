@@ -130,7 +130,8 @@ def display_menu():
     print("5. Update a document")
     print("6. Delete a document")
     print("7. Clear screen")
-    print("8. Exit")
+    print("8. Cancel")
+    print("9. Exit")
 
 def main():
     first_run = True
@@ -143,22 +144,30 @@ def main():
 
         if choice == '1':
             collections = list_collections()
-            collection_idx = int(input("Select collection by number: ")) - 1
+            collection_idx = int(input("Select collection by number (or 0 to cancel): ")) - 1
+            if collection_idx == -1:
+                continue
             collection = collections[collection_idx]
             document_ids = list_document_ids(collection)
-            doc_id_idx = int(input("Select document ID by number: ")) - 1
+            doc_id_idx = int(input("Select document ID by number (or 0 to cancel): ")) - 1
+            if doc_id_idx == -1:
+                continue
             doc_id = document_ids[doc_id_idx]
             data = eval(input("Enter data as a dictionary: "))
             create_document(collection, doc_id, data)
         elif choice == '2':
             collections = list_collections()
-            collection_idx = int(input("Select collection by number: ")) - 1
+            collection_idx = int(input("Select collection by number (or 0 to cancel): ")) - 1
+            if collection_idx == -1:
+                continue
             collection = collections[collection_idx]
             documents = eval(input("Enter documents as a dictionary: "))
             create_multiple_documents(collection, documents)
         elif choice == '3':
             collections = list_collections()
-            collection_idx = int(input("Select collection by number: ")) - 1
+            collection_idx = int(input("Select collection by number (or 0 to cancel): ")) - 1
+            if collection_idx == -1:
+                continue
             collection = collections[collection_idx]
             document_ids = list_document_ids(collection)
             doc_id_idx = int(input("Select document ID by number: ")) - 1
@@ -166,12 +175,16 @@ def main():
             read_document(collection, doc_id)
         elif choice == '4':
             collections = list_collections()
-            collection_idx = int(input("Select collection by number: ")) - 1
+            collection_idx = int(input("Select collection by number (or 0 to cancel): ")) - 1
+            if collection_idx == -1:
+                continue
             collection = collections[collection_idx]
             read_multiple_documents(collection)
         elif choice == '5':
             collections = list_collections()
-            collection_idx = int(input("Select collection by number: ")) - 1
+            collection_idx = int(input("Select collection by number (or 0 to cancel): ")) - 1
+            if collection_idx == -1:
+                continue
             collection = collections[collection_idx]
             doc_id = input("Enter document ID: ")
             data = eval(input("Enter data to update as a dictionary: "))
@@ -185,6 +198,8 @@ def main():
         elif choice == '7':
             clear_screen()
         elif choice == '8':
+            continue
+        elif choice == '9':
             break
         else:
             print("Invalid choice. Please try again.")
