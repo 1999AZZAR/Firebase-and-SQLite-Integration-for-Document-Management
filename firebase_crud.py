@@ -96,37 +96,50 @@ def delete_document(collection_name, document_id):
     conn.commit()
     print(f'Document {document_id} deleted from collection {collection_name} and cache')
 
-# Example usage
+def display_menu():
+    print("Select an operation:")
+    print("1. Create a document")
+    print("2. Create multiple documents")
+    print("3. Read a document")
+    print("4. Read multiple documents")
+    print("5. Update a document")
+    print("6. Delete a document")
+    print("7. Exit")
+
+def main():
+    while True:
+        display_menu()
+        choice = input("Enter your choice: ")
+
+        if choice == '1':
+            collection = input("Enter collection name: ")
+            doc_id = input("Enter document ID: ")
+            data = eval(input("Enter data as a dictionary: "))
+            create_document(collection, doc_id, data)
+        elif choice == '2':
+            collection = input("Enter collection name: ")
+            documents = eval(input("Enter documents as a dictionary: "))
+            create_multiple_documents(collection, documents)
+        elif choice == '3':
+            collection = input("Enter collection name: ")
+            doc_id = input("Enter document ID: ")
+            read_document(collection, doc_id)
+        elif choice == '4':
+            collection = input("Enter collection name: ")
+            read_multiple_documents(collection)
+        elif choice == '5':
+            collection = input("Enter collection name: ")
+            doc_id = input("Enter document ID: ")
+            data = eval(input("Enter data to update as a dictionary: "))
+            update_document(collection, doc_id, data)
+        elif choice == '6':
+            collection = input("Enter collection name: ")
+            doc_id = input("Enter document ID: ")
+            delete_document(collection, doc_id)
+        elif choice == '7':
+            break
+        else:
+            print("Invalid choice. Please try again.")
+
 if __name__ == "__main__":
-    collection = 'users'
-    doc_id = 'user1'
-    data = {
-        'name': 'John Doe',
-        'email': 'john.doe@example.com',
-        'age': 30
-    }
-
-    # Create
-    create_document(collection, doc_id, data)
-
-    # Create multiple documents
-    multiple_data = {
-        'user2': {'name': 'Jane Doe', 'email': 'jane.doe@example.com', 'age': 25},
-        'user3': {'name': 'Jim Beam', 'email': 'jim.beam@example.com', 'age': 35}
-    }
-    create_multiple_documents(collection, multiple_data)
-
-    # Read multiple documents
-    read_multiple_documents(collection)
-
-    # Read single document
-    read_document(collection, doc_id)
-
-    # Update
-    update_document(collection, doc_id, {'age': 31})
-
-    # Read again to see the update
-    read_document(collection, doc_id)
-
-    # Delete
-    delete_document(collection, doc_id)
+    main()
