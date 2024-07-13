@@ -66,7 +66,11 @@ def read_multiple_documents(collection_name):
     for idx, doc in enumerate(docs):
         document_ids.append(doc.id)
         print(f"{idx + 1}. {doc.id}")
-    return document_ids
+    if document_ids:
+        return document_ids
+    else:
+        print(f"No documents found in collection {collection_name}")
+        return []
     for doc in docs:
         print(f'{doc.id} => {doc.to_dict()}')
 
@@ -147,13 +151,22 @@ def main():
             if collection_idx == -1:
                 continue
             collection = collections[collection_idx]
-            read_multiple_documents(collection)
-            document_ids = list_document_ids(collection)
-            doc_id_idx = int(input("Select document ID by number (or 0 to cancel): ")) - 1
-            if doc_id_idx == -1:
-                continue
-            doc_id = document_ids[doc_id_idx]
-            read_document(collection, doc_id)
+            document_ids = read_multiple_documents(collection)
+            if document_ids:
+                doc_id_idx = int(input("Select document ID by number (or 0 to cancel): ")) - 1
+                if doc_id_idx == -1:
+                    continue
+                doc_id = document_ids[doc_id_idx]
+                read_document(collection, doc_id)
+            doc_id = input("Enter new document ID: ")
+            doc_ref = db.collection(collection).document(doc_id)
+            if doc_ref.get().exists:
+                print(f"Document {doc_id} already exists. Switching to edit mode.")
+                data = eval(input("Enter data to update as a dictionary: "))
+                update_document(collection, doc_id, data)
+            else:
+                data = eval(input("Enter data as a dictionary: "))
+                create_document(collection, doc_id, data)
             doc_id = input("Enter new document ID: ")
             doc_ref = db.collection(collection).document(doc_id)
             if doc_ref.get().exists:
