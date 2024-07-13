@@ -3,17 +3,7 @@ from firebase_admin import credentials, firestore
 import sqlite3
 
 # Initialize the Firebase app
-firebaseConfig = {
-    "apiKey": "AIzaSyC9JhuNTi0lEGi5SJrz2mwvp0xALCR409g",
-    "authDomain": "washapp-test-app.firebaseapp.com",
-    "databaseURL": "https://washapp-test-app-default-rtdb.asia-southeast1.firebasedatabase.app",
-    "projectId": "washapp-test-app",
-    "storageBucket": "washapp-test-app.appspot.com",
-    "messagingSenderId": "711370391927",
-    "appId": "1:711370391927:web:234315043b5f86c08e6172"
-}
-
-cred = credentials.Certificate(firebaseConfig)
+cred = credentials.Certificate('path/to/serviceAccountKey.json')
 firebase_admin.initialize_app(cred)
 
 # Get a reference to the Firestore service
