@@ -3,7 +3,7 @@ from firebase_admin import credentials, firestore
 import sqlite3
 
 # Initialize the Firebase app
-cred = credentials.Certificate('path/to/serviceAccountKey.json')
+cred = credentials.Certificate('config-firebase.json')
 firebase_admin.initialize_app(cred)
 
 # Get a reference to the Firestore service
