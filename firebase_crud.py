@@ -100,15 +100,19 @@ def delete_document(collection_name, document_id):
 
 def list_collections():
     collections = db.collections()
-    print("Available collections:")
-    for collection in collections:
-        print(collection.id)
+    collections_list = []
+    for idx, collection in enumerate(collections):
+        collections_list.append(collection.id)
+        print(f"{idx + 1}. {collection.id}")
+    return collections_list
 
 def list_document_ids(collection_name):
     docs = db.collection(collection_name).stream()
-    print(f"Available document IDs in collection '{collection_name}':")
-    for doc in docs:
-        print(doc.id)
+    document_ids = []
+    for idx, doc in enumerate(docs):
+        document_ids.append(doc.id)
+        print(f"{idx + 1}. {doc.id}")
+    return document_ids
 
 def display_menu():
     print("Select an operation:")
@@ -126,19 +130,27 @@ def main():
         choice = input("Enter your choice: ")
 
         if choice == '1':
-            list_collections()
-            collection = input("Enter collection name: ")
-            list_document_ids(collection)
-            doc_id = input("Enter document ID: ")
+            collections = list_collections()
+            collection_idx = int(input("Select collection by number: ")) - 1
+            collection = collections[collection_idx]
+            document_ids = list_document_ids(collection)
+            doc_id_idx = int(input("Select document ID by number: ")) - 1
+            doc_id = document_ids[doc_id_idx]
             data = eval(input("Enter data as a dictionary: "))
             create_document(collection, doc_id, data)
         elif choice == '2':
-            collection = input("Enter collection name: ")
+            collections = list_collections()
+            collection_idx = int(input("Select collection by number: ")) - 1
+            collection = collections[collection_idx]
             documents = eval(input("Enter documents as a dictionary: "))
             create_multiple_documents(collection, documents)
         elif choice == '3':
-            collection = input("Enter collection name: ")
-            doc_id = input("Enter document ID: ")
+            collections = list_collections()
+            collection_idx = int(input("Select collection by number: ")) - 1
+            collection = collections[collection_idx]
+            document_ids = list_document_ids(collection)
+            doc_id_idx = int(input("Select document ID by number: ")) - 1
+            doc_id = document_ids[doc_id_idx]
             read_document(collection, doc_id)
         elif choice == '4':
             collection = input("Enter collection name: ")
