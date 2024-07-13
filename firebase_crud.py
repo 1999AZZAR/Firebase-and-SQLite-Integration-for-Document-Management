@@ -129,7 +129,8 @@ def display_menu():
     print("4. Read multiple documents")
     print("5. Update a document")
     print("6. Delete a document")
-    print("7. Exit")
+    print("7. Clear screen")
+    print("8. Exit")
 
 def main():
     while True:
@@ -179,6 +180,8 @@ def main():
             doc_id = input("Enter document ID: ")
             delete_document(collection, doc_id)
         elif choice == '7':
+            clear_screen()
+        elif choice == '8':
             break
         else:
             print("Invalid choice. Please try again.")
