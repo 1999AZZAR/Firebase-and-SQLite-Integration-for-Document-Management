@@ -133,8 +133,11 @@ def display_menu():
     print("8. Exit")
 
 def main():
+    first_run = True
     while True:
-        clear_screen()
+        if first_run:
+            clear_screen()
+            first_run = False
         display_menu()
         choice = input("Enter your choice: ")
 
