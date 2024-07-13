@@ -102,6 +102,12 @@ def list_collections():
     for collection in collections:
         print(collection.id)
 
+def list_document_ids(collection_name):
+    docs = db.collection(collection_name).stream()
+    print(f"Available document IDs in collection '{collection_name}':")
+    for doc in docs:
+        print(doc.id)
+
 def display_menu():
     print("Select an operation:")
     print("1. Create a document")
