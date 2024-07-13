@@ -62,6 +62,7 @@ def read_multiple_documents(collection_name):
 
     # If not in cache, read from Firestore
     docs = db.collection(collection_name).stream()
+    for doc in docs:
         print(f'{doc.id} => {doc.to_dict()}')
 def read_document(collection_name, document_id):
     doc = db.collection(collection_name).document(document_id).get()
