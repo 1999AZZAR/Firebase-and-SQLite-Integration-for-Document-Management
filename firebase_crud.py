@@ -13,7 +13,20 @@ def create_document(collection_name, document_id, data):
     db.collection(collection_name).document(document_id).set(data)
     print(f'Document {document_id} created in collection {collection_name}')
 
-# Read a document
+# Create multiple documents
+def create_multiple_documents(collection_name, documents):
+    batch = db.batch()
+    for doc_id, data in documents.items():
+        doc_ref = db.collection(collection_name).document(doc_id)
+        batch.set(doc_ref, data)
+    batch.commit()
+    print(f'Multiple documents created in collection {collection_name}')
+
+# Read multiple documents
+def read_multiple_documents(collection_name):
+    docs = db.collection(collection_name).stream()
+    for doc in docs:
+        print(f'{doc.id} => {doc.to_dict()}')
 def read_document(collection_name, document_id):
     doc = db.collection(collection_name).document(document_id).get()
     if doc.exists:
@@ -44,7 +57,17 @@ if __name__ == "__main__":
     # Create
     create_document(collection, doc_id, data)
 
-    # Read
+    # Create multiple documents
+    multiple_data = {
+        'user2': {'name': 'Jane Doe', 'email': 'jane.doe@example.com', 'age': 25},
+        'user3': {'name': 'Jim Beam', 'email': 'jim.beam@example.com', 'age': 35}
+    }
+    create_multiple_documents(collection, multiple_data)
+
+    # Read multiple documents
+    read_multiple_documents(collection)
+
+    # Read single document
     read_document(collection, doc_id)
 
     # Update
