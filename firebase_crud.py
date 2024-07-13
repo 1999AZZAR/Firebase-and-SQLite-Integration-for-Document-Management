@@ -147,11 +147,7 @@ def main():
             if collection_idx == -1:
                 continue
             collection = collections[collection_idx]
-            document_ids = list_document_ids(collection)
-            doc_id_idx = int(input("Select document ID by number (or 0 to cancel): ")) - 1
-            if doc_id_idx == -1:
-                continue
-            doc_id = document_ids[doc_id_idx]
+            doc_id = input("Enter new document ID: ")
             data = eval(input("Enter data as a dictionary: "))
             create_document(collection, doc_id, data)
         elif choice == '2':
