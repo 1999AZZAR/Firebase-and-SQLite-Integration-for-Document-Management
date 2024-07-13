@@ -1,5 +1,6 @@
 import firebase_admin
 from firebase_admin import credentials, firestore
+import sqlite3
 
 # Initialize the Firebase app
 cred = credentials.Certificate('path/to/your/serviceAccountKey.json')
@@ -8,10 +9,29 @@ firebase_admin.initialize_app(cred)
 # Get a reference to the Firestore service
 db = firestore.client()
 
+# Initialize the SQLite database
+conn = sqlite3.connect('local_cache.db')
+c = conn.cursor()
+c.execute('''
+    CREATE TABLE IF NOT EXISTS cache (
+        collection TEXT,
+        document_id TEXT,
+        data TEXT,
+        PRIMARY KEY (collection, document_id)
+    )
+''')
+conn.commit()
+
 # Create a new document
 def create_document(collection_name, document_id, data):
     db.collection(collection_name).document(document_id).set(data)
-    print(f'Document {document_id} created in collection {collection_name}')
+    # Cache the document locally
+    c.execute('''
+        INSERT OR REPLACE INTO cache (collection, document_id, data)
+        VALUES (?, ?, ?)
+    ''', (collection_name, document_id, str(data)))
+    conn.commit()
+    print(f'Document {document_id} created in collection {collection_name} and cached locally')
 
 # Create multiple documents
 def create_multiple_documents(collection_name, documents):
@@ -20,29 +40,60 @@ def create_multiple_documents(collection_name, documents):
         doc_ref = db.collection(collection_name).document(doc_id)
         batch.set(doc_ref, data)
     batch.commit()
-    print(f'Multiple documents created in collection {collection_name}')
+    # Cache the documents locally
+    for doc_id, data in documents.items():
+        c.execute('''
+            INSERT OR REPLACE INTO cache (collection, document_id, data)
+            VALUES (?, ?, ?)
+        ''', (collection_name, doc_id, str(data)))
+    conn.commit()
+    print(f'Multiple documents created in collection {collection_name} and cached locally')
 
 # Read multiple documents
 def read_multiple_documents(collection_name):
     docs = db.collection(collection_name).stream()
-    for doc in docs:
+    # Try to read from the local cache first
+    c.execute('SELECT document_id, data FROM cache WHERE collection = ?', (collection_name,))
+    cached_docs = c.fetchall()
+    if cached_docs:
+        for doc_id, data in cached_docs:
+            print(f'{doc_id} => {data}')
+        return
+
+    # If not in cache, read from Firestore
+    docs = db.collection(collection_name).stream()
         print(f'{doc.id} => {doc.to_dict()}')
 def read_document(collection_name, document_id):
     doc = db.collection(collection_name).document(document_id).get()
     if doc.exists:
-        print(f'Document data: {doc.to_dict()}')
+        # Cache the document locally
+        c.execute('''
+            INSERT OR REPLACE INTO cache (collection, document_id, data)
+            VALUES (?, ?, ?)
+        ''', (collection_name, document_id, str(doc.to_dict())))
+        conn.commit()
+        print(f'Document data: {doc.to_dict()} (cached locally)')
     else:
         print(f'No such document in collection {collection_name}')
 
 # Update a document
 def update_document(collection_name, document_id, data):
     db.collection(collection_name).document(document_id).update(data)
-    print(f'Document {document_id} updated in collection {collection_name}')
+    # Update the local cache
+    c.execute('''
+        INSERT OR REPLACE INTO cache (collection, document_id, data)
+        VALUES (?, ?, ?)
+    ''', (collection_name, document_id, str(data)))
+    conn.commit()
+    print(f'Document {document_id} updated in collection {collection_name} and cache')
 
 # Delete a document
 def delete_document(collection_name, document_id):
     db.collection(collection_name).document(document_id).delete()
-    print(f'Document {document_id} deleted from collection {collection_name}')
+    # Remove from the local cache
+    c.execute('DELETE FROM cache WHERE collection = ? AND document_id = ?', (collection_name, document_id))
+    conn.commit()
+    print(f'Document {document_id} deleted from collection {collection_name} and cache')
 
 # Example usage
 if __name__ == "__main__":
