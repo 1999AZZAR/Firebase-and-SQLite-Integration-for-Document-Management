@@ -147,6 +147,13 @@ def main():
             if collection_idx == -1:
                 continue
             collection = collections[collection_idx]
+            read_multiple_documents(collection)
+            document_ids = list_document_ids(collection)
+            doc_id_idx = int(input("Select document ID by number (or 0 to cancel): ")) - 1
+            if doc_id_idx == -1:
+                continue
+            doc_id = document_ids[doc_id_idx]
+            read_document(collection, doc_id)
             doc_id = input("Enter new document ID: ")
             doc_ref = db.collection(collection).document(doc_id)
             if doc_ref.get().exists:
@@ -171,7 +178,9 @@ def main():
                 continue
             collection = collections[collection_idx]
             document_ids = list_document_ids(collection)
-            doc_id_idx = int(input("Select document ID by number: ")) - 1
+            doc_id_idx = int(input("Select document ID by number (or 0 to cancel): ")) - 1
+            if doc_id_idx == -1:
+                continue
             doc_id = document_ids[doc_id_idx]
             read_document(collection, doc_id)
         elif choice == '4':
@@ -187,14 +196,22 @@ def main():
             if collection_idx == -1:
                 continue
             collection = collections[collection_idx]
-            doc_id = input("Enter document ID: ")
+            document_ids = list_document_ids(collection)
+            doc_id_idx = int(input("Select document ID by number (or 0 to cancel): ")) - 1
+            if doc_id_idx == -1:
+                continue
+            doc_id = document_ids[doc_id_idx]
             data = eval(input("Enter data to update as a dictionary: "))
             update_document(collection, doc_id, data)
         elif choice == '6':
             collections = list_collections()
             collection_idx = int(input("Select collection by number: ")) - 1
             collection = collections[collection_idx]
-            doc_id = input("Enter document ID: ")
+            document_ids = list_document_ids(collection)
+            doc_id_idx = int(input("Select document ID by number (or 0 to cancel): ")) - 1
+            if doc_id_idx == -1:
+                continue
+            doc_id = document_ids[doc_id_idx]
             delete_document(collection, doc_id)
         elif choice == '7':
             clear_screen()
