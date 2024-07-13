@@ -148,8 +148,14 @@ def main():
                 continue
             collection = collections[collection_idx]
             doc_id = input("Enter new document ID: ")
-            data = eval(input("Enter data as a dictionary: "))
-            create_document(collection, doc_id, data)
+            doc_ref = db.collection(collection).document(doc_id)
+            if doc_ref.get().exists:
+                print(f"Document {doc_id} already exists. Switching to edit mode.")
+                data = eval(input("Enter data to update as a dictionary: "))
+                update_document(collection, doc_id, data)
+            else:
+                data = eval(input("Enter data as a dictionary: "))
+                create_document(collection, doc_id, data)
         elif choice == '2':
             collections = list_collections()
             collection_idx = int(input("Select collection by number (or 0 to cancel): ")) - 1
