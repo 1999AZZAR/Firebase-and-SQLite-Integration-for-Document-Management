@@ -1,6 +1,7 @@
 import firebase_admin
 from firebase_admin import credentials, firestore
 import sqlite3
+import os
 
 # Initialize the Firebase app
 cred = credentials.Certificate('config-firebase.json')
@@ -117,6 +118,9 @@ def list_document_ids(collection_name):
         print(f"{idx + 1}. {doc.id}")
     return document_ids
 
+def clear_screen():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
 def display_menu():
     print("Select an operation:")
     print("1. Create a document")
@@ -129,6 +133,7 @@ def display_menu():
 
 def main():
     while True:
+        clear_screen()
         display_menu()
         choice = input("Enter your choice: ")
 
