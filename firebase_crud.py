@@ -96,7 +96,17 @@ def delete_document(collection_name, document_id):
     conn.commit()
     print(f'Document {document_id} deleted from collection {collection_name} and cache')
 
-def display_menu():
+def list_collections():
+    collections = db.collections()
+    print("Available collections:")
+    for collection in collections:
+        print(collection.id)
+
+def list_document_ids(collection_name):
+    docs = db.collection(collection_name).stream()
+    print(f"Available document IDs in collection '{collection_name}':")
+    for doc in docs:
+        print(doc.id)
     print("Select an operation:")
     print("1. Create a document")
     print("2. Create multiple documents")
@@ -112,7 +122,11 @@ def main():
         choice = input("Enter your choice: ")
 
         if choice == '1':
+            list_collections()
+            list_collections()
             collection = input("Enter collection name: ")
+            list_document_ids(collection)
+            list_document_ids(collection)
             doc_id = input("Enter document ID: ")
             data = eval(input("Enter data as a dictionary: "))
             create_document(collection, doc_id, data)
