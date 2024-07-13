@@ -130,8 +130,7 @@ def display_menu():
     print("5. Update a document")
     print("6. Delete a document")
     print("7. Clear screen")
-    print("8. Cancel")
-    print("9. Exit")
+    print("8. Exit")
 
 def main():
     first_run = True
@@ -198,8 +197,6 @@ def main():
         elif choice == '7':
             clear_screen()
         elif choice == '8':
-            continue
-        elif choice == '9':
             break
         else:
             print("Invalid choice. Please try again.")
