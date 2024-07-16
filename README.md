@@ -12,8 +12,8 @@ This repository contains a Python script to perform CRUD (Create, Read, Update, 
 
 1. Clone the repository:
     ```bash
-    git clone <repository-url>
-    cd <repository-directory>
+    git clone https://github.com/1999AZZAR/Firebase-and-SQLite-Integration-for-Document-Management.git
+    cd Firebase-and-SQLite-Integration-for-Document-Management
     ```
 
 2. Install the required Python packages:
