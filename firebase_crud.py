@@ -3,22 +3,34 @@ from firebase_admin import credentials, firestore
 import sqlite3
 import os
 
-# Initialize the Firebase app
-def initialize_firebase():
-    try:
-        cred = credentials.Certificate('config-firebase.json')
-        firebase_admin.initialize_app(cred)
-        print("Firebase initialized successfully.")
-    except Exception as e:
-        print(f"Error initializing Firebase: {e}")
+def initialize_firebase(firebase_cred):
+    # Initialize Firebase
+    cred = credentials.Certificate(firebase_cred)
+    firebase_admin.initialize_app(cred)
+    return firestore.client()
 
-# Get a reference to the Firestore service
-def get_firestore_client():
-    try:
-        return firestore.client()
-    except Exception as e:
-        print(f"Error getting Firestore client: {e}")
-        return None
+def delete_collection(db, collection_name, batch_size):
+    collection_ref = db.collection(collection_name)
+    docs = collection_ref.limit(batch_size).stream()
+    
+    deleted = 0
+    for doc in docs:
+        doc.reference.delete()
+        deleted += 1
+
+    if deleted >= batch_size:
+        return delete_collection(db, collection_name, batch_size)
+
+def cleanup_firebase(firebase_cred):
+    db = initialize_firebase(firebase_cred)
+    
+    # Get all collections
+    collections = db.collections()
+    
+    for collection in collections:
+        delete_collection(db, collection.id, 100)
+
+# Initialize the Firebase app
 
 # Cache all documents from all collections
 def cache_all_documents(db, c):
