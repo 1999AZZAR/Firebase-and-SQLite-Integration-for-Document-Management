@@ -406,8 +406,6 @@ def main():
             db_file = os.path.splitext(xlsx_file)[0] + '.db'
             xlsx_to_sqlite(xlsx_file, db_file)
         elif choice == '10':
-            db_file = os.path.splitext(xlsx_file)[0] + '.db'
-            firebase_cred = input("Enter the path to your Firebase credentials JSON file: ")
             upload_to_firebase(db_file, firebase_cred)
         elif choice == '11':
             break
