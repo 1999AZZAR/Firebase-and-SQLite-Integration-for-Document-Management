@@ -20,7 +20,21 @@ def get_firestore_client():
         print(f"Error getting Firestore client: {e}")
         return None
 
-# Initialize the SQLite database
+# Cache all documents from all collections
+def cache_all_documents(db, c):
+    try:
+        collections = db.collections()
+        for collection in collections:
+            docs = collection.stream()
+            for doc in docs:
+                c.execute('''
+                    INSERT OR REPLACE INTO cache (collection, document_id, data)
+                    VALUES (?, ?, ?)
+                ''', (collection.id, doc.id, str(doc.to_dict())))
+        c.connection.commit()
+        print("All documents cached successfully.")
+    except Exception as e:
+        print(f"Error caching documents: {e}")
 def initialize_sqlite_db():
     try:
         conn = sqlite3.connect('local_cache.db')
@@ -185,6 +199,7 @@ def main():
         return
 
     c = conn.cursor()
+    cache_all_documents(db, c)
     first_run = True
     while True:
         if first_run:
