@@ -261,7 +261,8 @@ def xlsx_to_sqlite(xlsx_file, db_file):
 def upload_to_firebase(db_file, firebase_cred):
     # Initialize Firebase
     cred = credentials.Certificate(firebase_cred)
-    firebase_admin.initialize_app(cred)
+    if not firebase_admin._apps:
+        firebase_admin.initialize_app(cred)
     db = firestore.client()
 
     # Connect to SQLite database
