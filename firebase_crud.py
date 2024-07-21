@@ -35,7 +35,26 @@ def cache_all_documents(db, c):
         print("All documents cached successfully.")
     except Exception as e:
         print(f"Error caching documents: {e}")
-def initialize_sqlite_db():
+def delete_collection(db, collection_name, batch_size):
+    collection_ref = db.collection(collection_name)
+    docs = collection_ref.limit(batch_size).stream()
+    
+    deleted = 0
+    for doc in docs:
+        doc.reference.delete()
+        deleted += 1
+
+    if deleted >= batch_size:
+        return delete_collection(db, collection_name, batch_size)
+
+def cleanup_firebase(firebase_cred):
+    db = initialize_firebase(firebase_cred)
+    
+    # Get all collections
+    collections = db.collections()
+    
+    for collection in collections:
+        delete_collection(db, collection.id, 100)
     try:
         conn = sqlite3.connect('local_cache.db')
         with conn:
@@ -187,7 +206,8 @@ def display_menu():
     print("5. Update a document")
     print("6. Delete a document")
     print("7. Clear screen")
-    print("8. Exit")
+    print("8. Nuke Firebase Database")
+    print("9. Exit")
 
 def main():
     initialize_firebase()
@@ -283,6 +303,9 @@ def main():
         elif choice == '7':
             clear_screen()
         elif choice == '8':
+            firebase_cred = input("Enter the path to your Firebase credentials JSON file: ")
+            cleanup_firebase(firebase_cred)
+        elif choice == '9':
             break
         else:
             print("Invalid choice. Please try again.")
