@@ -409,6 +409,7 @@ def main():
             xlsx_to_sqlite(xlsx_file, db_file)
             xlsx_to_sqlite(xlsx_file, db_file)
         elif choice == '10':
+            db_file = input("Enter the path to the SQLite database file: ")
             upload_to_firebase(db_file, firebase_cred)
         elif choice == '11':
             break
