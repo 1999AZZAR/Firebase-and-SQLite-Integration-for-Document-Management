@@ -3,42 +3,6 @@ from firebase_admin import credentials, firestore
 import sqlite3
 import os
 
-# Initialize the Firebase app
-def initialize_firebase():
-    try:
-        cred = credentials.Certificate('config-firebase.json')
-        firebase_admin.initialize_app(cred)
-        print("Firebase initialized successfully.")
-    except Exception as e:
-        print(f"Error initializing Firebase: {e}")
-
-# Get a reference to the Firestore service
-def get_firestore_client():
-    try:
-        return firestore.client()
-    except Exception as e:
-        print(f"Error getting Firestore client: {e}")
-        return None
-
-# Initialize the SQLite database
-def initialize_sqlite_db():
-    try:
-        conn = sqlite3.connect('local_cache.db')
-        with conn:
-            c = conn.cursor()
-            c.execute('''
-                CREATE TABLE IF NOT EXISTS cache (
-                    collection TEXT,
-                    document_id TEXT,
-                    data TEXT,
-                    PRIMARY KEY (collection, document_id)
-                )
-            ''')
-            print("SQLite database initialized successfully.")
-        return conn
-    except sqlite3.Error as e:
-        print(f"Error initializing SQLite database: {e}")
-        return None
 
 # Create a new document
 def create_document(db, c, collection_name, document_id, data):
