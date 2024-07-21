@@ -3,6 +3,8 @@ from firebase_admin import credentials, firestore
 import sqlite3
 import os
 
+import pandas as pd
+
 def initialize_firebase(firebase_cred):
     # Initialize Firebase
     cred = credentials.Certificate(firebase_cred)
@@ -232,7 +234,53 @@ def list_document_ids(db, collection_name):
     except Exception as e:
         print(f"Error listing document IDs: {e}")
 
-def clear_screen():
+def xlsx_to_sqlite(xlsx_file, db_file):
+    # Read all sheets from the Excel file
+    xls = pd.ExcelFile(xlsx_file)
+
+    # Connect to SQLite database (or create it)
+    conn = sqlite3.connect(db_file)
+    cursor = conn.cursor()
+
+    # Create tables for each sheet
+    for sheet_name in xls.sheet_names:
+        df = pd.read_excel(xls, sheet_name=sheet_name)
+        df.to_sql(sheet_name, conn, if_exists='replace', index=False)
+
+    # Commit and close
+    conn.commit()
+    conn.close()
+
+def upload_to_firebase(db_file, firebase_cred):
+    # Initialize Firebase
+    cred = credentials.Certificate(firebase_cred)
+    firebase_admin.initialize_app(cred)
+    db = firestore.client()
+
+    # Connect to SQLite database
+    conn = sqlite3.connect(db_file)
+    cursor = conn.cursor()
+
+    # Get table names
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+    tables = cursor.fetchall()
+
+    for table in tables:
+        table_name = table[0]
+
+        # Read data from SQLite
+        cursor.execute(f"SELECT * FROM {table_name}")
+        rows = cursor.fetchall()
+        columns = [description[0] for description in cursor.description]
+
+        # Upload data to Firebase with incremental document IDs
+        for idx, row in enumerate(rows):
+            data = dict(zip(columns, row))
+            doc_id = f"{table_name}_{idx + 1}"
+            db.collection(table_name).document(doc_id).set(data)
+
+    # Close the connection
+    conn.close()
     os.system('cls' if os.name == 'nt' else 'clear')
 
 def display_menu():
@@ -245,7 +293,9 @@ def display_menu():
     print("6. Delete a document")
     print("7. Clear screen")
     print("8. Nuke Firebase Database")
-    print("9. Exit")
+    print("9. Convert Excel to SQLite")
+    print("10. Upload SQLite to Firebase")
+    print("11. Exit")
 
 def main():
     firebase_cred = input("Enter the path to your Firebase credentials JSON file: ")
@@ -345,6 +395,14 @@ def main():
             firebase_cred = input("Enter the path to your Firebase credentials JSON file: ")
             cleanup_firebase(firebase_cred)
         elif choice == '9':
+            xlsx_file = input("Enter the path to the Excel file: ")
+            db_file = input("Enter the path to the SQLite database file: ")
+            xlsx_to_sqlite(xlsx_file, db_file)
+        elif choice == '10':
+            db_file = input("Enter the path to the SQLite database file: ")
+            firebase_cred = input("Enter the path to your Firebase credentials JSON file: ")
+            upload_to_firebase(db_file, firebase_cred)
+        elif choice == '11':
             break
         else:
             print("Invalid choice. Please try again.")
