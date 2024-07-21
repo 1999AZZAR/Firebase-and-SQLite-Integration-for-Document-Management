@@ -5,6 +5,9 @@ import os
 
 import pandas as pd
 
+import pandas as pd
+import os
+
 def initialize_firebase(firebase_cred):
     # Initialize Firebase
     cred = credentials.Certificate(firebase_cred)
@@ -233,6 +236,9 @@ def list_document_ids(db, collection_name):
         return document_ids
     except Exception as e:
         print(f"Error listing document IDs: {e}")
+
+def clear_screen():
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 def xlsx_to_sqlite(xlsx_file, db_file):
     # Read all sheets from the Excel file
