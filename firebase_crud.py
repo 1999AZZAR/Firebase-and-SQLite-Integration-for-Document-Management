@@ -248,7 +248,8 @@ def display_menu():
     print("9. Exit")
 
 def main():
-    initialize_firebase()
+    firebase_cred = input("Enter the path to your Firebase credentials JSON file: ")
+    initialize_firebase(firebase_cred)
     db = get_firestore_client()
     conn = initialize_sqlite_db()
 
