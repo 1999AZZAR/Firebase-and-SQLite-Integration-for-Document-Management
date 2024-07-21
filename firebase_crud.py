@@ -9,6 +9,32 @@ def initialize_firebase(firebase_cred):
     firebase_admin.initialize_app(cred)
     return firestore.client()
 
+def get_firestore_client():
+    try:
+        return firestore.client()
+    except Exception as e:
+        print(f"Error getting Firestore client: {e}")
+        return None
+
+def initialize_sqlite_db():
+    try:
+        conn = sqlite3.connect('local_cache.db')
+        with conn:
+            c = conn.cursor()
+            c.execute('''
+                CREATE TABLE IF NOT EXISTS cache (
+                    collection TEXT,
+                    document_id TEXT,
+                    data TEXT,
+                    PRIMARY KEY (collection, document_id)
+                )
+            ''')
+            print("SQLite database initialized successfully.")
+        return conn
+    except sqlite3.Error as e:
+        print(f"Error initializing SQLite database: {e}")
+        return None
+
 def delete_collection(db, collection_name, batch_size):
     collection_ref = db.collection(collection_name)
     docs = collection_ref.limit(batch_size).stream()
