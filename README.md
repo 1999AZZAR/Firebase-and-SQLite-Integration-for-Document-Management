@@ -1,6 +1,6 @@
 # Firebase CRUD Operations in Python
 
-This repository contains a Python script to perform CRUD (Create, Read, Update, Delete) operations on a Firebase Firestore database using the `firebase-admin` SDK.
+This repository contains Python scripts to perform CRUD (Create, Read, Update, Delete) operations on a Firebase Firestore database using the `firebase-admin` SDK, as well as to convert Excel files to SQLite databases and upload SQLite data to Firebase.
 
 ## Prerequisites
 
@@ -16,30 +16,43 @@ This repository contains a Python script to perform CRUD (Create, Read, Update, 
     cd Firebase-and-SQLite-Integration-for-Document-Management
     ```
 
-2. Install the required Python packages:
+2. Install the required Python packages listed in `requirements.txt`:
     ```bash
-    pip install firebase-admin
+    pip install -r requirements.txt
     ```
 
-3. Place your Firebase Admin SDK service account key JSON file in the project directory and update the path in `firebase_crud.py`:
+3. Place your Firebase Admin SDK service account key JSON file in the project directory. You will be prompted to enter the path to this file when running the scripts.
     ```python
     cred = credentials.Certificate('path/to/your/serviceAccountKey.json')
     ```
 
 ## Usage
 
-The `firebase_crud.py` script provides functions to create, read, update, and delete documents in a Firestore collection.
+The `firebase_crud.py` script provides a menu-driven interface to perform various operations on a Firestore collection, including CRUD operations, clearing the screen, nuking the Firebase database, converting Excel files to SQLite databases, and uploading SQLite data to Firebase.
 
-### Functions
+### Menu Options
 
-- `create_document(collection_name, document_id, data)`: Creates a new document in the specified collection.
-- `create_multiple_documents(collection_name, documents)`: Creates multiple documents in the specified collection.
-- `read_document(collection_name, document_id)`: Reads a single document from the specified collection.
-- `read_multiple_documents(collection_name)`: Reads all documents from the specified collection.
-- `update_document(collection_name, document_id, data)`: Updates an existing document in the specified collection.
-- `delete_document(collection_name, document_id)`: Deletes a document from the specified collection.
+1. Create a document
+2. Create multiple documents
+3. Read a document
+4. Read multiple documents
+5. Update a document
+6. Delete a document
+7. Clear screen
+8. Nuke Firebase Database
+9. Convert Excel to SQLite
+10. Upload SQLite to Firebase
+11. Exit
 
 
+## License
+
+This project is licensed under the MIT License.
+### Additional Scripts
+
+- `basic_crud.py`: Contains basic CRUD operations and a main function to demonstrate these operations.
+- `firebase_cleanup.py`: Contains functions to clean up the Firebase database.
+- `xlsx_to_sqlite_firebase.py`: Contains functions to convert Excel files to SQLite databases and upload SQLite data to Firebase.
 ## License
 
 This project is licensed under the MIT License.
