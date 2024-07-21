@@ -1,4 +1,4 @@
 .aider*
 config-firebase.json
 demo.cast
-local_cache.db
+*.db
