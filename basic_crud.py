@@ -2,6 +2,7 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 import sqlite3
 import os
+from firebase_crud import initialize_firebase, get_firestore_client, initialize_sqlite_db
 
 
 # Create a new document
