@@ -307,8 +307,9 @@ def display_menu():
 def main():
     firebase_cred = input("Enter the path to your Firebase credentials JSON file: ")
     if not firebase_admin._apps:
-        initialize_firebase(firebase_cred)
-    db = get_firestore_client()
+        db = initialize_firebase(firebase_cred)
+    else:
+        db = get_firestore_client()
     conn = initialize_sqlite_db()
 
     if db is None or conn is None:
@@ -400,15 +401,11 @@ def main():
         elif choice == '7':
             clear_screen()
         elif choice == '8':
-            firebase_cred = input("Enter the path to your Firebase credentials JSON file: ")
             cleanup_firebase(firebase_cred)
         elif choice == '9':
-            xlsx_file = input("Enter the path to the Excel file: ")
-            xlsx_file = input("Enter the path to the Excel file: ")
             db_file = os.path.splitext(xlsx_file)[0] + '.db'
             xlsx_to_sqlite(xlsx_file, db_file)
         elif choice == '10':
-            xlsx_file = input("Enter the path to the Excel file: ")
             db_file = os.path.splitext(xlsx_file)[0] + '.db'
             firebase_cred = input("Enter the path to your Firebase credentials JSON file: ")
             upload_to_firebase(db_file, firebase_cred)
