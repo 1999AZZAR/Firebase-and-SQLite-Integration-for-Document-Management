@@ -11,7 +11,8 @@ import os
 def initialize_firebase(firebase_cred):
     # Initialize Firebase
     cred = credentials.Certificate(firebase_cred)
-    firebase_admin.initialize_app(cred)
+    if not firebase_admin._apps:
+        firebase_admin.initialize_app(cred)
     return firestore.client()
 
 def get_firestore_client():
@@ -305,7 +306,8 @@ def display_menu():
 
 def main():
     firebase_cred = input("Enter the path to your Firebase credentials JSON file: ")
-    initialize_firebase(firebase_cred)
+    if not firebase_admin._apps:
+        initialize_firebase(firebase_cred)
     db = get_firestore_client()
     conn = initialize_sqlite_db()
 
@@ -402,10 +404,12 @@ def main():
             cleanup_firebase(firebase_cred)
         elif choice == '9':
             xlsx_file = input("Enter the path to the Excel file: ")
-            db_file = input("Enter the path to the SQLite database file: ")
+            xlsx_file = input("Enter the path to the Excel file: ")
+            db_file = os.path.splitext(xlsx_file)[0] + '.db'
             xlsx_to_sqlite(xlsx_file, db_file)
         elif choice == '10':
-            db_file = input("Enter the path to the SQLite database file: ")
+            xlsx_file = input("Enter the path to the Excel file: ")
+            db_file = os.path.splitext(xlsx_file)[0] + '.db'
             firebase_cred = input("Enter the path to your Firebase credentials JSON file: ")
             upload_to_firebase(db_file, firebase_cred)
         elif choice == '11':
