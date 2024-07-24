@@ -344,10 +344,14 @@ def main():
             doc_ref = db.collection(collection).document(doc_id)
             if doc_ref.get().exists:
                 print(f"Document {doc_id} already exists. Switching to edit mode.")
-                data = eval(input("Enter data to update as a dictionary: "))
+                data = eval(input("Enter data to update as a dictionary (or 0 to cancel): ")) - 1
+                if data == -1:
+                    continue
                 update_document(db, c, collection, doc_id, data)
             else:
-                data = eval(input("Enter data as a dictionary: "))
+                data = eval(input("Enter data as a dictionary (or 0 to cancel): ")) - 1
+                if data == -1:
+                    continue
                 create_document(db, c, collection, doc_id, data)
         elif choice == '2':
             collections = list_collections(db)
