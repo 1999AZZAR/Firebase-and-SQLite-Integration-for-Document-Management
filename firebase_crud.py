@@ -46,9 +46,13 @@ def delete_collection(db, collection_name, batch_size):
     docs = collection_ref.limit(batch_size).stream()
     
     deleted = 0
+    batch = db.batch()
     for doc in docs:
-        doc.reference.delete()
+        batch.delete(doc.reference)
         deleted += 1
+
+    if deleted > 0:
+        batch.commit()
 
     if deleted >= batch_size:
         return delete_collection(db, collection_name, batch_size)
@@ -79,17 +83,6 @@ def cache_all_documents(db, c):
         print("All documents cached successfully.")
     except Exception as e:
         print(f"Error caching documents: {e}")
-def delete_collection(db, collection_name, batch_size):
-    collection_ref = db.collection(collection_name)
-    docs = collection_ref.limit(batch_size).stream()
-    
-    deleted = 0
-    for doc in docs:
-        doc.reference.delete()
-        deleted += 1
-
-    if deleted >= batch_size:
-        return delete_collection(db, collection_name, batch_size)
 
 def cleanup_firebase(firebase_cred):
     db = initialize_firebase(firebase_cred)
@@ -281,11 +274,22 @@ def upload_to_firebase(db_file, firebase_cred):
         rows = cursor.fetchall()
         columns = [description[0] for description in cursor.description]
 
-        # Upload data to Firebase with incremental document IDs
+        # Upload data to Firebase using batched writes for better performance
+        batch = db.batch()
+        count = 0
         for idx, row in enumerate(rows):
             data = dict(zip(columns, row))
             doc_id = f"{table_name}_{idx + 1}"
-            db.collection(table_name).document(doc_id).set(data)
+            doc_ref = db.collection(table_name).document(doc_id)
+            batch.set(doc_ref, data)
+            count += 1
+            if count == 500:
+                batch.commit()
+                batch = db.batch()
+                count = 0
+
+        if count > 0:
+            batch.commit()
 
     # Close the connection
     conn.close()
