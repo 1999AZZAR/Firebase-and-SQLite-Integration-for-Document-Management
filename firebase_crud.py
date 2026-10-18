@@ -281,11 +281,25 @@ def upload_to_firebase(db_file, firebase_cred):
         rows = cursor.fetchall()
         columns = [description[0] for description in cursor.description]
 
-        # Upload data to Firebase with incremental document IDs
+        # ⚡ Bolt Optimization: Batch Firestore uploads to reduce network overhead
+        # Firestore supports up to 500 operations per batch
+        batch = db.batch()
+        batch_size = 0
         for idx, row in enumerate(rows):
             data = dict(zip(columns, row))
             doc_id = f"{table_name}_{idx + 1}"
-            db.collection(table_name).document(doc_id).set(data)
+            doc_ref = db.collection(table_name).document(doc_id)
+            batch.set(doc_ref, data)
+            batch_size += 1
+
+            if batch_size == 500:
+                batch.commit()
+                batch = db.batch()
+                batch_size = 0
+
+        # Commit any remaining documents in the batch
+        if batch_size > 0:
+            batch.commit()
 
     # Close the connection
     conn.close()
