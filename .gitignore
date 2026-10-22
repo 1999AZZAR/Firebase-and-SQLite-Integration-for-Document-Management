@@ -2,3 +2,5 @@
 config-firebase.json
 demo.cast
 *.db
+__pycache__/
+*.pyc
