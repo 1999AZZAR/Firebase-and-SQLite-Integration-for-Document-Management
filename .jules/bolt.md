@@ -1,0 +1,3 @@
+## 2024-05-30 - Firestore Bulk Upload Bottleneck
+**Learning:** Bulk uploading data to Firestore using individual `.set()` calls creates significant network bottlenecks due to a separate network roundtrip for each document. The codebase used this anti-pattern when transferring SQLite data to Firebase, which would lead to severe performance degradation as the data size grows.
+**Action:** When performing bulk data uploads to Firestore, always use batched writes with `db.batch()`. A single batch can support up to 500 operations. I implemented a batching logic that flushes and creates a new batch every 500 records.
