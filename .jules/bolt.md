@@ -1,0 +1,3 @@
+## 2024-10-31 - Firestore Bulk Upload Bottleneck
+**Learning:** Individual `.set()` operations to Firestore during bulk uploads from SQLite create a significant network bottleneck because each operation requires a separate network round trip. This causes delays and increases the likelihood of rate limits or connection timeouts when dealing with a large number of records.
+**Action:** When performing bulk data uploads to Firestore, always use `db.batch()` with a maximum of 500 operations per batch. This allows bundling multiple writes into a single network request, drastically improving performance and efficiency while staying within Firestore's transaction limits.
