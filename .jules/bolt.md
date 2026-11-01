@@ -1,0 +1,3 @@
+## 2024-05-24 - Firestore Bulk Uploads Optimization
+**Learning:** Performing individual `.set()` calls on Firestore in a loop for bulk data uploads (e.g., from an SQLite database) creates significant network bottlenecks.
+**Action:** Always use `db.batch()` with a maximum of 500 operations per batch when uploading multiple documents to prevent these network bottlenecks and speed up the upload process.
