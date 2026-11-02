@@ -1,0 +1,3 @@
+## 2024-06-25 - [Bulk Upload Performance]
+**Learning:** Uploading bulk data from SQLite to Firestore row by row using `.set()` in a loop causes a massive network bottleneck due to one API request per row.
+**Action:** When performing bulk data uploads to Firestore, always use `db.batch()` to group up to 500 operations (the Firestore API limit) per batch to reduce the number of network requests and drastically improve performance.
