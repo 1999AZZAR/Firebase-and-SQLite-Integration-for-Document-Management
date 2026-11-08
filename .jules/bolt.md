@@ -1,0 +1,3 @@
+## 2024-06-25 - Bulk Data Upload Network Bottleneck
+**Learning:** Performing sequential `.set()` calls on a Firestore collection during large bulk data uploads (e.g., in `upload_to_firebase`) causes significant network bottlenecks and degrades performance. Also, `db.batch()` operations have a hard limit of 500 operations per batch which must be explicitly handled.
+**Action:** Always use batched writes (`db.batch()`) with a maximum chunk size of 500 operations to optimize network overhead and prevent batch limit errors during bulk document creation (`create_multiple_documents`) or migrations (`upload_to_firebase`).
