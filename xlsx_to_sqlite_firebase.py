@@ -34,6 +34,10 @@ def upload_to_firebase(db_file, firebase_cred):
     cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
     tables = cursor.fetchall()
 
+    # Initialize batched writes
+    batch = db.batch()
+    operations_count = 0
+
     for table in tables:
         table_name = table[0]
 
@@ -46,8 +50,17 @@ def upload_to_firebase(db_file, firebase_cred):
         for idx, row in enumerate(rows):
             data = dict(zip(columns, row))
             doc_id = f"{table_name}_{idx + 1}"
-            db.collection(table_name).document(doc_id).set(data)
+            doc_ref = db.collection(table_name).document(doc_id)
+            batch.set(doc_ref, data)
+            operations_count += 1
 
+            if operations_count == 500:
+                batch.commit()
+                batch = db.batch()
+                operations_count = 0
+
+    if operations_count > 0:
+        batch.commit()
 
     # Close the connection
     conn.close()
