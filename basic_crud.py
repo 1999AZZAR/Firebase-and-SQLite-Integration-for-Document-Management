@@ -22,11 +22,25 @@ def create_document(db, c, collection_name, document_id, data):
 # Create multiple documents
 def create_multiple_documents(db, c, collection_name, documents):
     try:
+        # ⚡ Bolt Optimization: Use chunked batches for faster bulk uploads
+        # Firestore batches support a maximum of 500 operations
         batch = db.batch()
+        batch_count = 0
         for doc_id, data in documents.items():
             doc_ref = db.collection(collection_name).document(doc_id)
             batch.set(doc_ref, data)
-        batch.commit()
+            batch_count += 1
+
+            # Commit batch when it reaches the 500 operation limit
+            if batch_count == 500:
+                batch.commit()
+                batch = db.batch()
+                batch_count = 0
+
+        # Commit any remaining operations in the last batch
+        if batch_count > 0:
+            batch.commit()
+
         # Cache the documents locally
         for doc_id, data in documents.items():
             c.execute('''
