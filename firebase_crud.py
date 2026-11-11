@@ -134,11 +134,25 @@ def create_document(db, c, collection_name, document_id, data):
 # Create multiple documents
 def create_multiple_documents(db, c, collection_name, documents):
     try:
+        # ⚡ Bolt Optimization: Use chunked batches for faster bulk uploads
+        # Firestore batches support a maximum of 500 operations
         batch = db.batch()
+        batch_count = 0
         for doc_id, data in documents.items():
             doc_ref = db.collection(collection_name).document(doc_id)
             batch.set(doc_ref, data)
-        batch.commit()
+            batch_count += 1
+
+            # Commit batch when it reaches the 500 operation limit
+            if batch_count == 500:
+                batch.commit()
+                batch = db.batch()
+                batch_count = 0
+
+        # Commit any remaining operations in the last batch
+        if batch_count > 0:
+            batch.commit()
+
         # Cache the documents locally
         for doc_id, data in documents.items():
             c.execute('''
@@ -282,10 +296,26 @@ def upload_to_firebase(db_file, firebase_cred):
         columns = [description[0] for description in cursor.description]
 
         # Upload data to Firebase with incremental document IDs
+        # ⚡ Bolt Optimization: Use batches for faster bulk uploads
+        # Firestore batches support a maximum of 500 operations
+        batch = db.batch()
+        batch_count = 0
         for idx, row in enumerate(rows):
             data = dict(zip(columns, row))
             doc_id = f"{table_name}_{idx + 1}"
-            db.collection(table_name).document(doc_id).set(data)
+            doc_ref = db.collection(table_name).document(doc_id)
+            batch.set(doc_ref, data)
+            batch_count += 1
+
+            # Commit batch when it reaches the 500 operation limit
+            if batch_count == 500:
+                batch.commit()
+                batch = db.batch()
+                batch_count = 0
+
+        # Commit any remaining operations in the last batch
+        if batch_count > 0:
+            batch.commit()
 
     # Close the connection
     conn.close()
